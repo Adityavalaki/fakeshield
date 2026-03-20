@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FakeShield — AI Fake News Detector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0b0d;--surface:#111318;--border:#1e2130;--accent:#e8ff47;--red:#ff4444;--green:#44ff99;--muted:#4a5160;--text:#e2e8f0;--sub:#7a8599}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,255,71,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,255,71,.03) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+  header{position:relative;z-index:10;padding:28px 48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-icon{width:40px;height:40px;background:var(--accent);border-radius:10px;display:grid;place-items:center;font-size:18px;color:#000;font-weight:800}
+  .logo-text{font-size:20px;font-weight:800;letter-spacing:-.5px}
+  .logo-text span{color:var(--accent)}
+  .header-badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .hero{position:relative;z-index:10;padding:80px 48px 40px;max-width:900px;margin:0 auto;text-align:center}
+  .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(232,255,71,.08);border:1px solid rgba(232,255,71,.2);color:var(--accent);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:28px}
+  .hero h1{font-size:clamp(40px,6vw,68px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{font-size:17px;color:var(--sub);max-width:520px;margin:0 auto 40px;line-height:1.7}
+  .stats{display:flex;justify-content:center;gap:48px;margin-bottom:64px}
+  .stat{text-align:center}
+  .stat-num{font-size:28px;font-weight:800;color:var(--accent);font-family:'IBM Plex Mono',monospace}
+  .stat-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+  .main-card{position:relative;z-index:10;max-width:860px;margin:0 auto;padding:0 48px 80px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+  .card-header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:13px;font-family:'IBM Plex Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .char-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+  .char-count.warn{color:#ffaa44}.char-count.limit{color:var(--red)}
+  /* Tabs */
+  .tab-row{display:flex;gap:8px;padding:16px 28px;border-bottom:1px solid var(--border)}
+  .tab{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 16px;border-radius:20px;cursor:pointer;transition:all .2s}
+  .tab.active{background:rgba(232,255,71,.08);border-color:rgba(232,255,71,.3);color:var(--accent)}
+  textarea{width:100%;min-height:200px;background:transparent;border:none;outline:none;resize:none;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text);line-height:1.7;padding:24px 28px;caret-color:var(--accent)}
+  textarea::placeholder{color:var(--muted)}
+  .url-input{width:100%;min-height:80px;background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text);line-height:1.7;padding:24px 28px;caret-color:var(--accent)}
+  .url-input::placeholder{color:var(--muted)}
+  .card-footer{padding:16px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .examples{display:flex;gap:8px;flex-wrap:wrap}
+  .examples-label{font-size:12px;color:var(--muted)}
+  .example-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--sub);font-size:11px;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:'IBM Plex Mono',monospace}
+  .example-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.05)}
+  .analyze-wrap{display:flex;justify-content:center;margin:28px 0}
+  .analyze-btn{background:var(--accent);color:#000;border:none;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;padding:16px 52px;border-radius:50px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+  .analyze-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(232,255,71,.25)}
+  .analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .analyze-btn .spinner{display:none;width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+  .analyze-btn.loading .btn-text{display:none}
+  .analyze-btn.loading .spinner{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #result-panel{display:none;animation:slideIn .4s cubic-bezier(.16,1,.3,1)}
+  @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  #result-panel.visible{display:block}
+  .result-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;overflow:hidden}
+  .result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;transition:background .4s}
+  .result-card.real::before{background:var(--green)}
+  .result-card.fake::before{background:var(--red)}
+  .result-card.uncertain::before{background:#ffaa44}
+  .result-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+  .verdict-badge{display:flex;align-items:center;gap:12px}
+  .verdict-icon{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:26px}
+  .verdict-icon.real{background:rgba(68,255,153,.1)}
+  .verdict-icon.fake{background:rgba(255,68,68,.1)}
+  .verdict-icon.uncertain{background:rgba(255,170,68,.1)}
+  .verdict-text h2{font-size:26px;font-weight:800;letter-spacing:-.5px}
+  .verdict-text h2.real{color:var(--green)}.verdict-text h2.fake{color:var(--red)}.verdict-text h2.uncertain{color:#ffaa44}
+  .verdict-text p{font-size:13px;color:var(--muted);margin-top:3px}
+  .confidence-block{text-align:right}
+  .confidence-num{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:500;line-height:1}
+  .confidence-num.real{color:var(--green)}.confidence-num.fake{color:var(--red)}.confidence-num.uncertain{color:#ffaa44}
+  .confidence-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+  .prob-section{margin-bottom:28px}
+  .prob-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+  .prob-row{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+  .prob-name{font-size:12px;font-weight:600;width:40px}
+  .prob-name.real{color:var(--green)}.prob-name.fake{color:var(--red)}
+  .prob-bar-wrap{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+  .prob-bar{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.16,1,.3,1);width:0}
+  .prob-bar.real{background:var(--green)}.prob-bar.fake{background:var(--red)}
+  .prob-pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--sub);width:44px;text-align:right}
+  .meta-row{display:flex;gap:16px;flex-wrap:wrap}
+  .meta-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+  .meta-chip span{color:var(--sub)}
+  .demo-notice{display:flex;align-items:center;gap:10px;background:rgba(255,170,68,.06);border:1px solid rgba(255,170,68,.2);border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#ffaa44}
+  .error-msg{background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--red);display:none;margin-bottom:16px}
+  .error-msg.visible{display:block}
+  .section{position:relative;z-index:10;max-width:860px;margin:0 auto;padding:0 48px 80px}
+  .section-title{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:32px;display:flex;align-items:center;gap:12px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .arch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .arch-step{background:var(--surface);padding:24px 20px}
+  .arch-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px}
+  .arch-icon{font-size:28px;margin-bottom:12px;display:block}
+  .arch-step h4{font-size:14px;font-weight:700;margin-bottom:6px}
+  .arch-step p{font-size:12px;color:var(--muted);line-height:1.6}
+  footer{position:relative;z-index:10;text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+  footer a{color:var(--accent);text-decoration:none}
+  @media(max-width:700px){header,.hero,.main-card,.section{padding-left:20px;padding-right:20px}.hero h1{font-size:36px}.stats{gap:24px}.arch-grid{grid-template-columns:repeat(2,1fr)}.result-top{flex-direction:column;gap:20px;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">FS</div>
+    <div class="logo-text">Fake<span>Shield</span></div>
+  </div>
+  <div class="header-badge"><div class="dot"></div><span>DistilBERT · Transformer Model</span></div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">⚡ Powered by Transformers</div>
+  <h1>Detect <em>Fake News</em><br>with AI Precision</h1>
+  <p>Advanced NLP model trained on real-world news corpora. Paste any article, headline, or claim to get instant analysis.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">~93%</div><div class="stat-label">Accuracy</div></div>
+    <div class="stat"><div class="stat-num">&lt;200ms</div><div class="stat-label">Latency</div></div>
+    <div class="stat"><div class="stat-num">128</div><div class="stat-label">Max Tokens</div></div>
+    <div class="stat"><div class="stat-num">BERT</div><div class="stat-label">Architecture</div></div>
+  </div>
+</div>
+
+<div class="main-card">
+  <div id="demo-notice" class="demo-notice" style="display:none">
+    <span>⚠️</span>
+    <div><strong>Demo Mode</strong> — Run <code>python train.py</code> to train the model. Predictions are heuristic until then.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">// input</span>
+      <span class="char-count" id="charCount">0 / 10,000</span>
+    </div>
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('text',this)">📝 Paste Text</button>
+      <button class="tab" onclick="switchTab('url',this)">🔗 News URL</button>
+    </div>
+    <div id="tab-text">
+      <textarea id="newsInput" placeholder="Paste a news article, headline, or claim here..." maxlength="10000"></textarea>
+    </div>
+    <div id="tab-url" style="display:none">
+      <input class="url-input" id="urlInput" type="text" placeholder="https://www.bbc.com/news/..."/>
+    </div>
+    <div class="card-footer">
+      <span class="examples-label">Try:</span>
+      <div class="examples">
+        <button class="example-btn" data-type="real">📰 Real example</button>
+        <button class="example-btn" data-type="fake">⚠️ Fake example</button>
+        <button class="example-btn" onclick="clearInput()">✕ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="analyze-wrap">
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+      <span class="btn-text">Analyze Article</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div id="result-panel">
+    <div class="result-card" id="resultCard">
+      <div class="result-top">
+        <div class="verdict-badge">
+          <div class="verdict-icon" id="verdictIcon"></div>
+          <div class="verdict-text">
+            <h2 id="verdictText"></h2>
+            <p id="verdictSub"></p>
+          </div>
+        </div>
+        <div class="confidence-block">
+          <div class="confidence-num" id="confidenceNum"></div>
+          <div class="confidence-label">Confidence</div>
+        </div>
+      </div>
+      <div class="prob-section">
+        <div class="prob-label">// probability breakdown</div>
+        <div class="prob-row">
+          <span class="prob-name real">REAL</span>
+          <div class="prob-bar-wrap"><div class="prob-bar real" id="realBar"></div></div>
+          <span class="prob-pct" id="realPct"></span>
+        </div>
+        <div class="prob-row">
+          <span class="prob-name fake">FAKE</span>
+          <div class="prob-bar-wrap"><div class="prob-bar fake" id="fakeBar"></div></div>
+          <span class="prob-pct" id="fakePct"></span>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-chip">⏱ <span id="latencyChip">—</span></div>
+        <div class="meta-chip">📝 <span id="lengthChip">—</span></div>
+        <div class="meta-chip">🤖 <span>DistilBERT</span></div>
+        <div class="meta-chip" id="demoChip" style="display:none">⚠️ <span>Demo Mode</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">How it works</div>
+  <div class="arch-grid">
+    <div class="arch-step"><div class="arch-num">01</div><span class="arch-icon">📥</span><h4>Input</h4><p>Raw text tokenized using WordPiece with 30,522-token vocabulary.</p></div>
+    <div class="arch-step"><div class="arch-num">02</div><span class="arch-icon">🔄</span><h4>Transformer</h4><p>6-layer DistilBERT encoder with multi-head self-attention (768-dim).</p></div>
+    <div class="arch-step"><div class="arch-num">03</div><span class="arch-icon">🧠</span><h4>Classifier</h4><p>[CLS] token → LayerNorm → Dropout → MLP → 2 logits.</p></div>
+    <div class="arch-step"><div class="arch-num">04</div><span class="arch-icon">📊</span><h4>Output</h4><p>Softmax probabilities for REAL/FAKE with confidence thresholding.</p></div>
+  </div>
+</div>
+
+<footer>Built with ♥ using <a href="#">DistilBERT + PyTorch + Flask</a> · FakeShield — IT Department Mini Project</footer>
+
+<script>
+const EXAMPLES = {
+  real: `Scientists at Harvard Medical School published a peer-reviewed study in the New England Journal of Medicine confirming that a new vaccine reduces hospitalizations by 87% in clinical trials involving over 40,000 participants. The research was funded by the National Institutes of Health and independently verified by three separate academic institutions.`,
+  fake: `BREAKING!! EXPOSED: Bill Gates ADMITS vaccines contain microchips that connect to 5G towers to TRACK your every movement!! A whistleblower from inside the WHO has revealed the TRUTH that mainstream media is DESPERATELY trying to hide!! SHARE THIS before they DELETE IT!!`
+};
+
+let activeTab = 'text';
+const textarea  = document.getElementById('newsInput');
+const charCount = document.getElementById('charCount');
+
+function updateCharCount() {
+  const len = textarea.value.length;
+  charCount.textContent = `${len.toLocaleString()} / 10,000`;
+  charCount.className = 'char-count' + (len>9000?' warn':'') + (len>=10000?' limit':'');
+}
+textarea.addEventListener('input', updateCharCount);
+
+function switchTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-text').style.display = tab==='text' ? 'block' : 'none';
+  document.getElementById('tab-url').style.display  = tab==='url'  ? 'block' : 'none';
+  charCount.style.display = tab==='text' ? 'block' : 'none';
+}
+
+function clearInput() {
+  textarea.value = '';
+  document.getElementById('urlInput').value = '';
+  updateCharCount();
+}
+
+document.querySelectorAll('.example-btn[data-type]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (activeTab==='url') switchTab('text', document.querySelector('.tab'));
+    textarea.value = EXAMPLES[btn.dataset.type];
+    updateCharCount();
+  });
+});
+
+fetch('/health').then(r=>r.json()).then(d=>{
+  if(d.demo_mode) document.getElementById('demo-notice').style.display='flex';
+}).catch(()=>{});
+
+async function analyze() {
+  const btn = document.getElementById('analyzeBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  hideError();
+  document.getElementById('result-panel').classList.remove('visible');
+
+  try {
+    let data;
+    if (activeTab==='url') {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url.startsWith('http')) { showError('Enter a valid URL starting with http://'); return; }
+      const res = await fetch('/predict/url', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+      data = await res.json();
+      if (data.error) { showError(data.error); return; }
+      showResult({label:data.final_verdict, verdict:data.final_verdict==='FAKE'?'Fake News':'Real News',
+        confidence:data.final_verdict==='FAKE'?data.final_fake_score:1-data.final_fake_score,
+        real_prob:parseFloat((1-data.final_fake_score).toFixed(4)),
+        fake_prob:parseFloat(data.final_fake_score.toFixed(4)), latency_ms:0, text_length:0});
+    } else {
+      const text = textarea.value.trim();
+      if (!text || text.length<10) { showError('Please enter at least 10 characters.'); return; }
+      const res = await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+      if (!res.ok) { const e=await res.json(); throw new Error(e.error||'Server error'); }
+      data = await res.json();
+      showResult(data);
+    }
+  } catch(err) {
+    showError(err.message || 'Failed to connect. Make sure Flask app is running.');
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+function showResult(data) {
+  const panel = document.getElementById('result-panel');
+  const card  = document.getElementById('resultCard');
+  const cls   = data.verdict==='Uncertain' ? 'uncertain' : data.label==='REAL' ? 'real' : 'fake';
+  card.className = `result-card ${cls}`;
+  const icons = {real:'✅',fake:'🚨',uncertain:'⚠️'};
+  document.getElementById('verdictIcon').className  = `verdict-icon ${cls}`;
+  document.getElementById('verdictIcon').textContent = icons[cls];
+  document.getElementById('verdictText').className  = cls;
+  document.getElementById('verdictText').textContent = data.verdict;
+  const subs = {real:'This article exhibits characteristics consistent with credible reporting.',
+                fake:'This article contains patterns commonly associated with misinformation.',
+                uncertain:'The model is not confident enough to make a definitive classification.'};
+  document.getElementById('verdictSub').textContent = subs[cls];
+  const confEl = document.getElementById('confidenceNum');
+  confEl.className = `confidence-num ${cls}`;
+  animateNumber(confEl, 0, Math.round(data.confidence*100), 800, '%');
+  setTimeout(()=>{
+    document.getElementById('realBar').style.width = (data.real_prob*100)+'%';
+    document.getElementById('fakeBar').style.width = (data.fake_prob*100)+'%';
+  },100);
+  document.getElementById('realPct').textContent = (data.real_prob*100).toFixed(1)+'%';
+  document.getElementById('fakePct').textContent = (data.fake_prob*100).toFixed(1)+'%';
+  document.getElementById('latencyChip').textContent = data.latency_ms ? `${data.latency_ms}ms` : '—';
+  document.getElementById('lengthChip').textContent  = data.text_length ? `${data.text_length} chars` : '—';
+  document.getElementById('demoChip').style.display  = data.demo_mode ? 'flex' : 'none';
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function animateNumber(el,from,to,duration,suffix=''){
+  const start = performance.now();
+  function step(now){
+    const t=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-t,3);
+    el.textContent=Math.round(from+(to-from)*ease)+suffix;
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function showError(msg){const el=document.getElementById('errorMsg');el.textContent=msg;el.classList.add('visible')}
+function hideError(){document.getElementById('errorMsg').classList.remove('visible')}
+textarea.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')analyze()});
+</script>
+</body>
+</html>
