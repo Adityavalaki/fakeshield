@@ -351,17 +351,17 @@ fakeshield/
 
 DistilBERT uses self-attention to look at every word in context simultaneously. After fine-tuning on fake news data, it learns patterns like:
 
-| Pattern | Signal |
-|---------|--------|
+| Pattern                                                |  Signal  |
+|--------------------------------------------------------|----------|
 | `SHOCKING` + `EXPOSED` + `!!` + `share before deleted` | 🚨 Fake |
-| `peer-reviewed` + `published in` + named institution | ✅ Real |
-| `whistleblower says` + no named source | 🚨 Fake |
-| specific % + named official + named agency | ✅ Real |
+| `peer-reviewed` + `published in` + named institution   | ✅ Real |
+| `whistleblower says` + no named source                 | 🚨 Fake |
+| specific % + named official + named agency             | ✅ Real |
 
 Unlike keyword matching, the transformer understands **context** — the same word means different things in different sentences.
 
 ### Confidence Thresholding
-
+ 
 ```python
 if confidence >= 0.75:
     verdict = "Real News" if label == "REAL" else "Fake News"
@@ -373,15 +373,15 @@ This three-way verdict system is more responsible than forcing a binary classifi
 
 ### Training Configuration
 
-| Parameter | Value | Reason |
-|-----------|-------|--------|
-| Model | distilbert-base-uncased | Best CPU speed/accuracy tradeoff |
-| Max Seq Length | 128 tokens | Covers 95% of news headlines |
-| Batch Size | 8 | Fits in 8GB RAM on CPU |
-| Learning Rate | 2e-5 | Standard for transformer fine-tuning |
-| Optimizer | AdamW | Decoupled weight decay |
-| Epochs | 2 | Converges without overfitting |
-| Confidence Threshold | 0.75 | Below this → Uncertain |
+| Parameter            | Value                   | Reason                               | 
+|----------------------|-------------------------|--------------------------------------|
+| Model                | distilbert-base-uncased | Best CPU speed/accuracy tradeoff     |
+| Max Seq Length       | 128 tokens              | Covers 95% of news headlines         |
+| Batch Size           | 8                       | Fits in 8GB RAM on CPU               |
+| Learning Rate        | 2e-5                    | Standard for transformer fine-tuning |
+| Optimizer            | AdamW                   | Decoupled weight decay               |
+| Epochs               | 2                       | Converges without overfitting        |
+| Confidence Threshold | 0.75                    | Below this → Uncertain               | 
 
 ---
 
@@ -441,16 +441,16 @@ curl http://localhost:5000/health
 
 ### All Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Web UI |
-| POST | `/predict` | Single text classification |
-| POST | `/predict/batch` | Batch (max 50 texts) |
-| GET | `/health` | Model status |
-| GET | `/model-info` | Metrics and model details |
-| GET | `/api/articles` | Stored monitored articles |
-| GET | `/api/stats` | REAL/FAKE/Uncertain counts |
-| GET | `/api/poll` | Trigger immediate RSS poll |
+| Method | Endpoint        | Description                |
+|--------|-----------------|----------------------------|
+| GET    | `/`             | Web UI                     |
+| POST   | `/predict`      | Single text classification |
+| POST   | `/predict/batch`| Batch (max 50 texts)       |
+| GET    | `/health`       | Model status               |
+| GET    | `/model-info`   | Metrics and model details  |
+| GET    | `/api/articles` | Stored monitored articles  |
+| GET    | `/api/stats`    | REAL/FAKE/Uncertain counts |
+| GET    | `/api/poll`     | Trigger immediate RSS poll |
 
 ---
 
@@ -472,13 +472,13 @@ python src/validate.py --bias          # Per-topic bias analysis
 
 ### Generated Plots
 
-| File | Contents |
-|------|---------|
-| `eval_standard.png` | Confusion matrix + ROC + confidence distribution |
-| `eval_cross_validation.png` | Per-fold accuracy and F1 |
-| `eval_calibration.png` | Reliability diagram + confidence histogram |
-| `eval_adversarial.png` | All 13 adversarial cases with predictions |
-| `eval_bias.png` | Per-topic accuracy breakdown |
+| File                        |  Contents                                        |
+|-----------------------------|--------------------------------------------------|
+| `eval_standard.png`         | Confusion matrix + ROC + confidence distribution |
+| `eval_cross_validation.png` | Per-fold accuracy and F1                         |
+| `eval_calibration.png`      | Reliability diagram + confidence histogram       |
+| `eval_adversarial.png`      | All 13 adversarial cases with predictions        |
+| `eval_bias.png`             | Per-topic accuracy breakdown                     |
 
 ---
 
@@ -493,33 +493,33 @@ The monitor automatically:
 
 **Monitored Sources:**
 
-| Source | Type |
-|--------|------|
-| The Hindu | Real Indian News |
-| Indian Express | Real Indian News |
-| NDTV | Real Indian News |
-| Times of India | Real Indian News |
-| LiveMint | Real Indian News |
-| Hindustan Times | Real Indian News |
-| BoomLive | Fact-check / Debunked |
-| AltNews | Fact-check / Debunked |
+| Source          | Type                  |
+|-----------------|-----------------------|
+| The Hindu       | Real Indian News      |
+| Indian Express  | Real Indian News      |
+| NDTV            | Real Indian News      |
+| Times of India  | Real Indian News      |
+| LiveMint        | Real Indian News      |
+| Hindustan Times | Real Indian News      |
+| BoomLive        | Fact-check / Debunked |
+| AltNews         | Fact-check / Debunked |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| Deep Learning | PyTorch ≥ 2.1.0 |
-| NLP Model | HuggingFace Transformers — DistilBERT |
-| Web Framework | Flask ≥ 3.0.0 |
-| Real-time | Flask-SocketIO |
-| Scheduling | APScheduler |
-| Database | SQLite3 (built-in) |
-| Data Processing | Pandas, NumPy |
-| ML Utilities | Scikit-learn |
-| Visualization | Matplotlib, Seaborn |
-| HTTP Client | Requests |
+| Category        | Technology                            |
+|-----------------|---------------------------------------|
+| Deep Learning   | PyTorch ≥ 2.1.0                       |
+| NLP Model       | HuggingFace Transformers — DistilBERT |
+| Web Framework   | Flask ≥ 3.0.0                         |
+| Real-time       | Flask-SocketIO                        |
+| Scheduling      | APScheduler                           |
+| Database        | SQLite3 (built-in)                    |
+| Data Processing | Pandas, NumPy                         |
+| ML Utilities    | Scikit-learn                          |
+| Visualization   | Matplotlib, Seaborn                   |
+| HTTP Client     | Requests                              |
 
 ---
 
@@ -543,16 +543,7 @@ The monitor automatically:
 
 ---
 
-## 👥 Team
-
-| Name | Enrollment |
-|------|-----------|
-| Aditya Janakkumar Valaki | 12302080501001 |
-| Aman Vohara | 12302080501002 |
-| Arth Patel | 12302080501003 |
-| Bhavik Sorathiya | 12302080501004 |
-
-**B.Tech Information Technology — Semester 6 Mini Project**  
+**B.Tech Information Technology — Semester 6 Machine Learning Project**  
 G H Patel College of Engineering & Technology, CVM University, Gujarat  
 Academic Year 2025–26
 
