@@ -1,0 +1,315 @@
+{
+  "standard": {
+    "accuracy": 1.0,
+    "f1": 1.0,
+    "roc_auc": 1.0,
+    "brier_score": 2.5540194958928453e-10
+  },
+  "cross_validation": {
+    "mean_accuracy": 1.0,
+    "std_accuracy": 0.0,
+    "mean_f1": 1.0,
+    "std_f1": 0.0,
+    "fold_details": [
+      {
+        "fold": 1,
+        "accuracy": 1.0,
+        "f1": 1.0
+      },
+      {
+        "fold": 2,
+        "accuracy": 1.0,
+        "f1": 1.0
+      },
+      {
+        "fold": 3,
+        "accuracy": 1.0,
+        "f1": 1.0
+      },
+      {
+        "fold": 4,
+        "accuracy": 1.0,
+        "f1": 1.0
+      },
+      {
+        "fold": 5,
+        "accuracy": 1.0,
+        "f1": 1.0
+      }
+    ]
+  },
+  "calibration": {
+    "brier_score": 2.5540194958928453e-10,
+    "calibration": "Well calibrated"
+  },
+  "adversarial": {
+    "adversarial_accuracy": 0.5,
+    "results": [
+      {
+        "category": "real_alarming",
+        "description": "Real news using urgent language \u2014 should not be mistaken for fake",
+        "true_label": 0,
+        "predicted": 0,
+        "confidence": 0.9501,
+        "real_prob": 0.9501,
+        "fake_prob": 0.0499,
+        "correct": "True"
+      },
+      {
+        "category": "real_surprising",
+        "description": "Real economic news with surprising statistics",
+        "true_label": 0,
+        "predicted": 0,
+        "confidence": 0.9999,
+        "real_prob": 0.9999,
+        "fake_prob": 0.0001,
+        "correct": "True"
+      },
+      {
+        "category": "real_shocking",
+        "description": "Real news with word 'shocking' in it \u2014 should still be REAL",
+        "true_label": 0,
+        "predicted": 0,
+        "confidence": 0.9584,
+        "real_prob": 0.9584,
+        "fake_prob": 0.0416,
+        "correct": "True"
+      },
+      {
+        "category": "real_whistleblower",
+        "description": "Real news with whistleblower framing \u2014 tricky because fake news often uses this",
+        "true_label": 0,
+        "predicted": 1,
+        "confidence": 0.575,
+        "real_prob": 0.425,
+        "fake_prob": 0.575,
+        "correct": "False"
+      },
+      {
+        "category": "real_miracle",
+        "description": "Real medical breakthrough that sounds miraculous \u2014 should be REAL due to credible sourcing",
+        "true_label": 0,
+        "predicted": 0,
+        "confidence": 0.9993,
+        "real_prob": 0.9993,
+        "fake_prob": 0.0007,
+        "correct": "True"
+      },
+      {
+        "category": "fake_credible_writing",
+        "description": "Fake news written in credible journalistic style \u2014 hard to detect",
+        "true_label": 1,
+        "predicted": 0,
+        "confidence": 0.9977,
+        "real_prob": 0.9977,
+        "fake_prob": 0.0023,
+        "correct": "False"
+      },
+      {
+        "category": "fake_academic_style",
+        "description": "Fake medical claim using academic language \u2014 should be FAKE",
+        "true_label": 1,
+        "predicted": 0,
+        "confidence": 0.9993,
+        "real_prob": 0.9993,
+        "fake_prob": 0.0007,
+        "correct": "False"
+      },
+      {
+        "category": "fake_insider_claim",
+        "description": "Political conspiracy with vague sourcing dressed up as insider news",
+        "true_label": 1,
+        "predicted": 0,
+        "confidence": 0.9998,
+        "real_prob": 0.9998,
+        "fake_prob": 0.0002,
+        "correct": "False"
+      },
+      {
+        "category": "fake_conspiracy",
+        "description": "Classic pharma conspiracy narrative",
+        "true_label": 1,
+        "predicted": 1,
+        "confidence": 0.8335,
+        "real_prob": 0.1665,
+        "fake_prob": 0.8335,
+        "correct": "True"
+      },
+      {
+        "category": "fake_government_cover",
+        "description": "Government cover-up narrative with vague attribution",
+        "true_label": 1,
+        "predicted": 0,
+        "confidence": 0.9982,
+        "real_prob": 0.9982,
+        "fake_prob": 0.0018,
+        "correct": "False"
+      },
+      {
+        "category": "ambiguous",
+        "description": "Genuinely ambiguous \u2014 neither clearly fake nor clearly real",
+        "true_label": -1,
+        "predicted": 0,
+        "confidence": 0.7845,
+        "real_prob": 0.7845,
+        "fake_prob": 0.2155,
+        "correct": null
+      },
+      {
+        "category": "ambiguous",
+        "description": "Unverified but not definitively fake \u2014 should be Uncertain",
+        "true_label": -1,
+        "predicted": 0,
+        "confidence": 0.9086,
+        "real_prob": 0.9086,
+        "fake_prob": 0.0914,
+        "correct": null
+      }
+    ]
+  },
+  "bias": {
+    "topic_results": {
+      "political": {
+        "accuracy": 1.0,
+        "cases": 4,
+        "correct": 4,
+        "predictions": [
+          {
+            "text": "BJP wins historic election with record majority according to...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9885,
+            "correct": true
+          },
+          {
+            "text": "Congress party forms coalition government after fractured ma...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9739,
+            "correct": true
+          },
+          {
+            "text": "EXPOSED: BJP secretly planning to change Constitution to ext...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9999,
+            "correct": true
+          },
+          {
+            "text": "Congress president caught on tape admitting election fraud, ...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9857,
+            "correct": true
+          }
+        ]
+      },
+      "medical": {
+        "accuracy": 1.0,
+        "cases": 4,
+        "correct": 4,
+        "predictions": [
+          {
+            "text": "AIIMS study confirms new drug reduces cardiac arrest risk by...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9997,
+            "correct": true
+          },
+          {
+            "text": "Lancet publishes Indian researchers' findings on dengue vacc...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9994,
+            "correct": true
+          },
+          {
+            "text": "Turmeric milk CURES cancer!! Big Pharma doesn't want you to ...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 1.0,
+            "correct": true
+          },
+          {
+            "text": "SHOCKING: Vaccines contain mercury that causes autism \u2014 gove...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 1.0,
+            "correct": true
+          }
+        ]
+      },
+      "economic": {
+        "accuracy": 1.0,
+        "cases": 4,
+        "correct": 4,
+        "predictions": [
+          {
+            "text": "RBI raises repo rate by 25 basis points to control inflation...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9962,
+            "correct": true
+          },
+          {
+            "text": "India's foreign exchange reserves hit record $640 billion ac...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9972,
+            "correct": true
+          },
+          {
+            "text": "Government secretly devaluing rupee to pay off hidden debt, ...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9573,
+            "correct": true
+          },
+          {
+            "text": "EXPOSED: Billionaires have looted Rs 50 lakh crore from Indi...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9999,
+            "correct": true
+          }
+        ]
+      },
+      "science_tech": {
+        "accuracy": 1.0,
+        "cases": 4,
+        "correct": 4,
+        "predictions": [
+          {
+            "text": "ISRO successfully launches GSAT-20 satellite from Sriharikot...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9765,
+            "correct": true
+          },
+          {
+            "text": "IIT Bombay researchers develop biodegradable plastic from su...",
+            "true": "REAL",
+            "predicted": "REAL",
+            "confidence": 0.9808,
+            "correct": true
+          },
+          {
+            "text": "5G radiation PROVEN to cause brain damage \u2014 studies suppress...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9993,
+            "correct": true
+          },
+          {
+            "text": "Scientists ADMIT climate change is a HOAX designed to contro...",
+            "true": "FAKE",
+            "predicted": "FAKE",
+            "confidence": 0.9913,
+            "correct": true
+          }
+        ]
+      }
+    },
+    "bias_score": 0.0
+  }
+}
